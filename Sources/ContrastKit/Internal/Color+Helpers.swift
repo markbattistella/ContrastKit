@@ -46,10 +46,17 @@ extension Color {
         var hue: CGFloat = 0
         var saturation: CGFloat = 0
         var brightness: CGFloat = 0
-        AgnosticColor(self).getHue(&hue,
-                            saturation: &saturation,
-                            brightness: &brightness,
-                            alpha: nil)
+
+        #if os(macOS)
+        let color = AgnosticColor(self).usingColorSpace(.sRGB) ?? AgnosticColor.white
+        #else
+        let color = AgnosticColor(self)
+        #endif
+
+        color.getHue(&hue,
+                     saturation: &saturation,
+                     brightness: &brightness,
+                     alpha: nil)
         return (hue, saturation, brightness)
     }
 
