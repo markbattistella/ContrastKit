@@ -1,6 +1,8 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
 
+![SwiftUI colours in a shaded spectrum from dark tint to light tint](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/banner.png)
+
 # ContrastKit
 
 ![Languages](https://img.shields.io/badge/Languages-Swift%20|%20SwiftUI%20|%20UIKit%20|%20AppKit-white?labelColor=orange&style=flat)
@@ -249,4 +251,4 @@ Contributions are highly encouraged, as they help make ContrastKit even more use
 
 ## License
 
-ContrastKit is available under the MIT license, allowing for widespread use and modification in both personal and commercial projects. See the LICENSE file included in the repository for full details.
+ContrastKit is available under the MIT license, allowing for widespread use and modification in both personal and commercial projects. See the [LICENSE](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/LICENCE) file included in the repository for full details.
