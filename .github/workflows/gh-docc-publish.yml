@@ -25,10 +25,10 @@ jobs:
         uses: actions/configure-pages@v2
       - name: Build Documentation
         run: |
-          xcodebuild docbuild\
-            -scheme ContrastKit\
-            -destination 'generic/platform=iOS'\
-            -derivedDataPath ../DerivedData
+         xcodebuild -docbuild -verbose \
+          -scheme ContrastKit \
+          -destination 'generic/platform=iOS' \
+          -derivedDataPath ../DerivedData
       - name: Process Archive
         run: |
           mkdir _site
