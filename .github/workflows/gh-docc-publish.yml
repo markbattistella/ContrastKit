@@ -25,7 +25,7 @@ jobs:
         uses: actions/configure-pages@v2
       - name: Build Documentation
         run: |
-         xcodebuild -docbuild -verbose \
+         xcodebuild docbuild -verbose \
           -scheme ContrastKit \
           -destination 'generic/platform=iOS' \
           -derivedDataPath ../DerivedData
