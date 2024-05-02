@@ -11,11 +11,15 @@
 #if canImport(UIKit)
 
 import UIKit.UIColor
+
+@available(iOS 14.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 public typealias AgnosticColor = UIColor
 
 #else
 
 import AppKit.NSColor
+
+@available(macOS 11.0, *)
 public typealias AgnosticColor = NSColor
 
 #endif

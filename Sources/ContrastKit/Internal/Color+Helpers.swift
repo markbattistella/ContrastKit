@@ -8,6 +8,7 @@ import SwiftUI
 
 // MARK: - Internal APIs
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension Color {
 
     /// Creates a color from specified HSL (Hue, Saturation, Lightness) components.
@@ -90,6 +91,7 @@ extension Color {
 
 // MARK: - Private APIs
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension Color {
 
     /// Converts hue value to RGB components.

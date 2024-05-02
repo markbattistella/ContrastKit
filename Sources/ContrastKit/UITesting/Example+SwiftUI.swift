@@ -10,6 +10,7 @@ import SwiftUI
 
 // MARK: - UI Preview
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 internal struct StandardShadeView: View {
 
     private let baseColor = Color.pink
@@ -36,6 +37,7 @@ internal struct StandardShadeView: View {
     }
 }
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 internal struct EnvironmentShadeView: View {
 
     @Environment(\.colorScheme)

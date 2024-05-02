@@ -8,6 +8,7 @@ import SwiftUI
 
 // MARK: - Public APIs
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension Color {
 
     /// Adjusts the color based on the specified level and optionally adjusts for the 

@@ -8,6 +8,7 @@ import SwiftUI
 
 // MARK: - Concenience APIs
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension Color {
     
     /// Returns a color at level 50 brightness.

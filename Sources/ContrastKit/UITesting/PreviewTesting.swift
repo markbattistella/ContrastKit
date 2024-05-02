@@ -9,13 +9,15 @@
 import SwiftUI
 
 /// An enumeration defining accessibility ratings based on contrast ratios.
-enum AccessibilityRating: String {
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
+internal enum AccessibilityRating: String {
     case fail = "Fail"
     case aaLarge = "AA Large"
     case aa = "AA"
     case aaa = "AAA"
 }
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension Color {
 
     /// Returns a string describing the contrast information between this color and another.
@@ -34,6 +36,7 @@ extension Color {
     }
 }
 
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension AgnosticColor {
 
     /// Calculates the contrast ratio between this color and another specified color and determines
@@ -80,6 +83,7 @@ extension AgnosticColor {
 ///   - contrast: The color used for text foreground to ensure it stands out against the `shade`.
 ///   - info: A string containing detailed information about the contrast ratio and/or other 
 ///   relevant data.
+@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 internal struct ShadeCell: View {
     private let level: ColorLevel
     private let shade: Color
