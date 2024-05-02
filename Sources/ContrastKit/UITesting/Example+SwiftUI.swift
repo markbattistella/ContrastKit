@@ -1,5 +1,5 @@
 //
-// Project: 
+// Project: ContrastKit
 // Author: Mark Battistella
 // Website: https://markbattistella.com
 //

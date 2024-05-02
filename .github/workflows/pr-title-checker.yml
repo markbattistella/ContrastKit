@@ -1,0 +1,12 @@
+name: PR checker
+on:
+  pull_request:
+jobs:
+  job1:
+    name: Check PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: thehanimo/pr-title-checker@v1.4.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pass_on_octokit_error: false
