@@ -1,23 +1,31 @@
-// swift-tools-version: 5.10
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version: 5.8
 
 import PackageDescription
 
 let package = Package(
-    name: "ShadedThemeKit",
+    name: "ContrastKit",
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .macCatalyst(.v14),
+        .tvOS(.v14)
+    ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "ShadedThemeKit",
-            targets: ["ShadedThemeKit"]),
+            name: "ContrastKit",
+            targets: ["ContrastKit"]
+        )
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ShadedThemeKit"),
+            name: "ContrastKit",
+            dependencies: [],
+            path: "Sources"
+        ),
         .testTarget(
-            name: "ShadedThemeKitTests",
-            dependencies: ["ShadedThemeKit"]),
+            name: "ContrastKitTests",
+            dependencies: ["ContrastKit"],
+            path: "Tests"
+        )
     ]
 )
