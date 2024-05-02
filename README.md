@@ -183,6 +183,10 @@ The `ColorLevel` enum defines different levels of lightness for colours, which c
 | level900 | 0.10      | Very dark, closer to black.                                         |
 | level950 | 0.05      | Extremely dark, almost black.                                       |
 
+<img src="https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/light-mode.png" width="500" alt="Light Mode range of shades"/>
+
+<img src="https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/dark-mode.png" width="500" alt="Dark Mode range of shades"/>
+
 ### Contrast
 
 The `ContrastLevel` enum specifies minimum and maximum contrast ratios for three accessibility standards: AA Large, AA, and AAA. These levels are based on the WCAG guidelines to ensure that text and interactive elements are readable and accessible.
