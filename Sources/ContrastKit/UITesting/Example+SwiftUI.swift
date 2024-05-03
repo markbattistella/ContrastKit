@@ -63,6 +63,13 @@ internal struct EnvironmentShadeView: View {
                     ShadeCell(level, shade: shadeColor, contrast: contrastColor, info: contrastInfo)
                 }
             }
+            VStack {
+                baseColor.level(.level100, scheme: colorScheme)
+                baseColor.level(.level900, scheme: colorScheme)
+
+                baseColor.level(.level100, scheme: colorScheme).level900
+                baseColor.level(.level900, scheme: colorScheme).level100
+            }
         }
     }
 }
