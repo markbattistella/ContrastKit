@@ -31,6 +31,7 @@ This package is particularly useful for UI/UX designers and developers focusing 
 - [Provided Levels](#provided-levels)
   - [Colour Range](#colour-range)
   - [Contrast](#contrast)
+  - [Dark Mode](#dark-mode-optional)
 - [UITesting folder](#uitesting-folder)
   - [Debugging and Visualisation](#debugging-and-visualisation)
   - [Usage in Xcode](#usage-in-xcode)
@@ -171,33 +172,67 @@ ContrastKit provides two core enums to assist in designing UIs with appropriate 
 
 The `ColorLevel` enum defines different levels of lightness for colours, which can be used to generate various shades from a single base colour. These shades range from very light (near white) to very dark (near black), suitable for different UI elements like backgrounds, text, and interactive elements.
 
-| Level    | Lightness | Description                                                         |
-| -------- | --------- | ------------------------------------------------------------------- |
-| level50  | 0.95      | Very light shade, almost white.                                     |
-| level100 | 0.90      | Very light shade.                                                   |
-| level200 | 0.80      | Lighter shade, for subtle backgrounds.                              |
-| level300 | 0.70      | Light shade, good for hover states or secondary buttons.            |
-| level400 | 0.60      | Medium light shade.                                                 |
-| level500 | 0.50      | Neutral base shade, often used for the primary variant of a colour. |
-| level600 | 0.40      | Medium dark shade.                                                  |
-| level700 | 0.30      | Darker shade, suitable for text.                                    |
-| level800 | 0.20      | Very dark shade, often used for text or active elements.            |
-| level900 | 0.10      | Very dark, closer to black.                                         |
-| level950 | 0.05      | Extremely dark, almost black.                                       |
+| Level      | Lightness | Description                                                         |
+|------------|-----------|---------------------------------------------------------------------|
+| `level50`  | `0.95`    | Very light shade, almost white.                                     |
+| `level100` | `0.90`    | Very light shade.                                                   |
+| `level200` | `0.80`    | Lighter shade, for subtle backgrounds.                              |
+| `level300` | `0.70`    | Light shade, good for hover states or secondary buttons.            |
+| `level400` | `0.60`    | Medium light shade.                                                 |
+| `level500` | `0.50`    | Neutral base shade, often used for the primary variant of a colour. |
+| `level600` | `0.40`    | Medium dark shade.                                                  |
+| `level700` | `0.30`    | Darker shade, suitable for text.                                    |
+| `level800` | `0.20`    | Very dark shade, often used for text or active elements.            |
+| `level900` | `0.10`    | Very dark, closer to black.                                         |
+| `level950` | `0.05`    | Extremely dark, almost black.                                       |
 
-<img src="https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/light-mode.png" width="500" alt="Light Mode range of shades"/>
-
-<img src="https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/dark-mode.png" width="500" alt="Dark Mode range of shades"/>
+| Light mode | Dark mode |
+|:-:|:-:|
+| ![Light Mode range of shades](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/light-mode.png) | ![Dark Mode range of shades](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/dark-mode.png) |
 
 ### Contrast
 
 The `ContrastLevel` enum specifies minimum and maximum contrast ratios for three accessibility standards: AA Large, AA, and AAA. These levels are based on the WCAG guidelines to ensure that text and interactive elements are readable and accessible.
 
-| Level    | Minimum Ratio | Maximum Ratio | Description                                     |
-| -------- | ------------- | ------------- | ----------------------------------------------- |
-| AA Large | 3.0           | 4.49          | Suitable for large text, offering basic readability. |
-| AA       | 4.5           | 6.99          | Standard level for normal text size, providing clear readability. |
-| AAA      | 7.0           | ∞             | Highest contrast level, recommended for the best readability across all contexts. |
+| Level    | Minimum Ratio | Maximum Ratio | Description |
+|----------|---------------|---------------|-------------|
+| AA Large | `3.0`         | `4.49`        | Suitable for large text, offering basic readability. |
+| AA       | `4.5`         | `6.99`        | Standard level for normal text size, providing clear readability. |
+| AAA      | `7.0`         | `.infinity`   | Highest contrast level, recommended for the best readability across all contexts. |
+
+### Dark mode (optional)
+
+ContrastKit also provides an optional dark mode (as pictured above) if you need the colours to adapt dynamically with your UI.
+
+You can do this by passing the `@Environment(\.colorScheme)` directly into the `level(_:scheme:)` function.
+
+```swift
+struct EnvironmentShadeView: View {
+  @Environment(\.colorScheme) private var colorScheme
+  var body: some View {
+    VStack {
+      Color.red.level(.level100, scheme: colorScheme)
+      Color.red.level(.level900, scheme: colorScheme)
+    }
+  }
+}
+```
+
+When the device switches colour schemes, the `ColorLevel` will flip:
+
+| Level      | Light mode | Dark mode equivalent |
+|------------|------------|----------------------|
+| `level50`  | `0.95`     | `0.05`               |
+| `level100` | `0.90`     | `0.10`               |
+| `level200` | `0.80`     | `0.20`               |
+| `level300` | `0.70`     | `0.30`               |
+| `level400` | `0.60`     | `0.40`               |
+| `level500` | `0.50`     | `0.50`               |
+| `level600` | `0.40`     | `0.60`               |
+| `level700` | `0.30`     | `0.70`               |
+| `level800` | `0.20`     | `0.80`               |
+| `level900` | `0.10`     | `0.90`               |
+| `level950` | `0.05`     | `0.95`               |
 
 ## UITesting folder
 
@@ -244,6 +279,16 @@ By modifying the `baseColor` or the `ColorLevel`, developers can experiment with
 - **Ease of Use:** Simplifies the process of testing multiple colour schemes without needing to deploy the app or navigate through different screens.
 
 The `PreviewTesting` file is a crucial tool for developers who are serious about integrating effective contrast handling in their applications, making ContrastKit a practical choice for enhancing UI accessibility.
+
+## Examples
+
+| iOS | iPadOS |
+|:-:|:-:|
+| ![iOS Shades example](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/iOS.png) | ![iPad Shades example](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/iPadOS.png) |
+
+| tvOS | visionOS |
+|:-:|:-:|
+| ![tvOS Shades example](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/tvOS.png) | ![visionOS Shades example](https://raw.githubusercontent.com/markbattistella/ContrastKit/main/.github/data/visionOS.png) |
 
 ## Contributing
 
