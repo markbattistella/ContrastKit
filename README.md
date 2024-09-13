@@ -5,12 +5,11 @@
 
 # ContrastKit
 
-![Languages](https://img.shields.io/badge/Languages-Swift%20|%20SwiftUI%20|%20UIKit%20|%20AppKit-white?labelColor=orange&style=flat)
+![Swift Versions](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fmarkbattistella%2FContrastKit%2Fbadge%3Ftype%3Dswift-versions)
 
-![Platforms](https://img.shields.io/badge/Platforms-iOS%2014+%20|%20iPadOS%2014+%20|%20macOS%2011+%20|%20tvOS%2014+-white?labelColor=gray&style=flat)
+![Platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fmarkbattistella%2FContrastKit%2Fbadge%3Ftype%3Dplatforms)
 
 ![Licence](https://img.shields.io/badge/Licence-MIT-white?labelColor=blue&style=flat)
-
 </div>
 
 **ContrastKit** is a Swift library designed to facilitate colour contrast handling within iOS, iPadOS, macOS, and tvOS applications.
