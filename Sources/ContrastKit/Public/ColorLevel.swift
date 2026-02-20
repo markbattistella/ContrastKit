@@ -8,8 +8,7 @@ import Foundation
 
 /// Enum defining specific lightness levels for colors, useful for generating color themes or
 /// ensuring accessible contrast.
-@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
-public enum ColorLevel: CaseIterable {
+public enum ColorLevel: CaseIterable, Sendable {
 
     case level50, level100, level200, level300, level400, level500,
          level600, level700, level800, level900, level950

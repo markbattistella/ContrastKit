@@ -5,11 +5,11 @@ import PackageDescription
 let package = Package(
     name: "ContrastKit",
     platforms: [
-        .iOS(.v14),
-        .macOS(.v11),
-        .macCatalyst(.v14),
-        .tvOS(.v14),
-        .watchOS(.v7),
+        .iOS(.v17),
+        .macOS(.v14),
+        .macCatalyst(.v17),
+        .tvOS(.v17),
+        .watchOS(.v10),
         .visionOS(.v1)
     ],
     products: [

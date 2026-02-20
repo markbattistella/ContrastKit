@@ -8,7 +8,6 @@ import SwiftUI
 
 // MARK: - Internal APIs
 
-@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension Color {
 
     /// Creates a color from specified HSL (Hue, Saturation, Lightness) components.
@@ -79,7 +78,7 @@ extension Color {
         let backgroundLuminance = AgnosticColor(self).luminance()
         var bestContrastColor: Color = .white
         var bestContrastRatio: CGFloat = 0
-        let candidateColors = [Color.white, Color.black] + ColorLevel.allCases.map { self.level($0) }
+        let candidateColors = [Color.white, Color.black] + ColorLevel.allCases.map { self.level($0, for: .light) }
         let (minRatio, upperLimit) = (level.ratio.min, maxRatio ?? level.ratio.max)
         for candidate in candidateColors {
             let candidateLuminance = AgnosticColor(candidate).luminance()
@@ -98,7 +97,6 @@ extension Color {
 
 // MARK: - Private APIs
 
-@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
 extension Color {
 
     /// Converts hue value to RGB components.
