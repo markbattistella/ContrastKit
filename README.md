@@ -43,7 +43,7 @@ This package is particularly useful for UI/UX designers and developers focusing 
 ## Migration Guide
 
 > [!IMPORTANT]
-> **Version 2.0 contains breaking changes.** Please read this section before upgrading.
+> **Version 26.2.20 contains breaking changes.** Please read this section before upgrading.
 
 ### Minimum deployment targets raised
 
