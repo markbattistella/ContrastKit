@@ -14,31 +14,31 @@ import Foundation
 /// - AAA: Enhanced contrast for improved readability.
 public enum ContrastLevel: String, Sendable {
 
-    /// Contrast level for large text, typically for visual accessibility.
-    case aaLarge = "AA Large"
+  /// Contrast level for large text, typically for visual accessibility.
+  case aaLarge = "AA Large"
 
-    /// Standard contrast level for normal text size, ensuring clear readability.
-    case aa = "AA"
+  /// Standard contrast level for normal text size, ensuring clear readability.
+  case aa = "AA"
 
-    /// Highest contrast level, recommended for the best readability in all contexts.
-    case aaa = "AAA"
+  /// Highest contrast level, recommended for the best readability in all contexts.
+  case aaa = "AAA"
 
-    /// Provides the minimum and maximum contrast ratios for each contrast level.
-    ///
-    /// These values define the acceptable range of contrast ratios to meet or exceed specific
-    /// accessibility requirements:
-    /// - For `aaLarge`, the range is suitable for large text.
-    /// - For `aa`, the range is set for normal text.
-    /// - For `aaa`, the range encompasses the highest contrast ratio, suitable for all types 
-    /// of text to ensure optimal readability.
-    var ratio: (min: CGFloat, max: CGFloat) {
-        switch self {
-            case .aaLarge:
-                return (3.0, 4.49)
-            case .aa:
-                return (4.5, 6.99)
-            case .aaa:
-                return (7.0, CGFloat.infinity)
-        }
+  /// Provides the minimum and maximum contrast ratios for each contrast level.
+  ///
+  /// These values define the acceptable range of contrast ratios to meet or exceed specific
+  /// accessibility requirements:
+  /// - For `aaLarge`, the range is suitable for large text.
+  /// - For `aa`, the range is set for normal text.
+  /// - For `aaa`, the range encompasses the highest contrast ratio, suitable for all types
+  /// of text to ensure optimal readability.
+  var ratio: (min: CGFloat, max: CGFloat) {
+    switch self {
+    case .aaLarge:
+      return (3.0, 4.49)
+    case .aa:
+      return (4.5, 6.99)
+    case .aaa:
+      return (7.0, CGFloat.infinity)
     }
+  }
 }

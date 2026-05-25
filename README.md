@@ -49,6 +49,7 @@ This package is particularly useful for UI/UX designers and developers focusing 
 
 | Platform    | Before | After    |
 |-------------|--------|----------|
+| Swift       | 5.9    | **6.0**  |
 | iOS         | 14.0   | **17.0** |
 | macOS       | 11.0   | **14.0** |
 | macCatalyst | 14.0   | **17.0** |
@@ -97,10 +98,18 @@ brandColor.level(.level300)  // returns ColorLevelStyle, no @Environment needed
 
 The ContrastKit package uses Swift Package Manager (SPM) for easy addition. Follow these steps to add it to your project:
 
-1. In Xcode, click `File -> Swift Packages -> Add Package Dependency`.
+1. In Xcode, click `File > Add Packages`.
 2. In the search bar, type `https://github.com/markbattistella/ContrastKit` and click `Next`.
 3. Specify the version you want to use. You can select the exact version, use the latest one, or set a version range, and then click `Next`.
 4. Finally, select the target in which you want to use `ContrastKit` and click `Finish`.
+
+Or add it to your package manifest:
+
+```swift
+dependencies: [
+  .package(url: "https://github.com/markbattistella/ContrastKit", from: "26.2.20")
+]
+```
 
 ## Usage
 
@@ -305,7 +314,7 @@ The `Example+SwiftUI` file provides three preview views:
 
 **`StandardShadeView`** — shades fixed to light mode, with contrast info displayed over each cell.
 
-**`EnvironmentShadeView`** — shades resolved against the current environment colour scheme (using `level(_:for: colorScheme)`), with contrast info.
+**`EnvironmentShadeView`** — shades resolved against the current environment colour scheme (using `level(_:for:)`), with contrast info.
 
 **`AdaptiveShadeView`** — demonstrates the simplified API. Uses `level(_:)` and the shorthand properties directly with no `@Environment` needed, showing how `ColorLevelStyle` adapts automatically.
 
@@ -319,7 +328,7 @@ To use this file effectively:
 1. Open the SwiftUI Preview pane to see the results.
 
 > [!CAUTION]
-> This file is intended for development use only and should not be included in the production build of the application.
+> These helpers live in the package source tree, but are guarded by `#if DEBUG`. They are available for Debug builds and are excluded from Release builds.
 
 It provides a straightforward and effective way to visually inspect the accessibility features provided by ContrastKit, ensuring that the colour contrasts meet the required standards before the application is deployed.
 
