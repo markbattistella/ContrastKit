@@ -13,7 +13,6 @@ import Foundation
 /// - AA: Standard minimum contrast for normal text.
 /// - AAA: Enhanced contrast for improved readability.
 public enum ContrastLevel: String, Sendable {
-
     /// Contrast level for large text, typically for visual accessibility.
     case aaLarge = "AA Large"
 

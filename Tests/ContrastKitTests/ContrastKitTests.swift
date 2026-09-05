@@ -19,7 +19,6 @@ import AppKit.NSAppearance
 
 @Suite("Luminance and contrast ratio")
 struct LuminanceAndContrastRatioTests {
-
     @Test("Black luminance is zero")
     func blackLuminanceIsZero() {
         #expect(abs(Color.black.relativeLuminance - 0.0) < 0.0001)
@@ -54,7 +53,6 @@ struct LuminanceAndContrastRatioTests {
 
 @Suite("ContrastLevel")
 struct ContrastLevelTests {
-
     @Test("Minimum ratios match the WCAG 2.1 floors")
     func minimumRatiosMatchWCAG() {
         #expect(ContrastLevel.aaLarge.minimumRatio == 3.0)
@@ -76,7 +74,6 @@ struct ContrastLevelTests {
 
 @Suite("Level ramp HSL correctness")
 struct LevelRampTests {
-
     @Test("level(_:for:) uses true HSL saturation, not HSB saturation")
     func levelUsesTrueHSLSaturation() {
         // RGB (0.6, 0.2, 0.2): HSB saturation = (0.6-0.2)/0.6 = 0.667(repeating).
@@ -132,7 +129,6 @@ struct LevelRampTests {
 
 @Suite("Best contrast candidate selection")
 struct BestContrastSelectionTests {
-
     @Test("aaContrastLevel picks black over white when black has the higher qualifying ratio")
     func aaContrastLevelPicksHighestQualifyingRatio() throws {
         // Against a pure white background, black gives a ratio of 21 — far above the AA floor
@@ -172,7 +168,6 @@ struct BestContrastSelectionTests {
 
 @Suite("Alpha handling")
 struct AlphaHandlingTests {
-
     @Test("flattened(over:) composites using simple linear alpha blending")
     func flattenedComposites() {
         // 50% red over white: R = 1*0.5 + 1*0.5 = 1, G = 0*0.5 + 1*0.5 = 0.5, B = same as G.
@@ -202,7 +197,6 @@ struct AlphaHandlingTests {
 
 @Suite("Wide gamut color space handling")
 struct WideGamutTests {
-
     @Test("Display P3 colors are converted to sRGB before computing luminance")
     func p3ColorsAreConvertedBeforeLuminance() throws {
         // Empirically measured via CGColor's own P3->sRGB conversion: this color has an
@@ -224,8 +218,8 @@ struct WideGamutTests {
         }
         let oracleLuminance = Double(
             0.2126 * wcagComponent(oracleComponents[0])
-            + 0.7152 * wcagComponent(oracleComponents[1])
-            + 0.0722 * wcagComponent(oracleComponents[2])
+                + 0.7152 * wcagComponent(oracleComponents[1])
+                + 0.0722 * wcagComponent(oracleComponents[2])
         )
 
         // The naive/buggy reading: treat the P3 components as if they were already sRGB.
@@ -246,13 +240,14 @@ struct WideGamutTests {
 
 @Suite("Trait-aware resolution (UIKit)")
 struct TraitAwareResolutionTests {
-
     /// A dynamic color that is white under any light appearance and black under any dark
     /// appearance — deliberately extreme so resolution differences are unambiguous.
     private var dynamicBlackOrWhite: Color {
-        Color(UIColor { traits in
-            traits.userInterfaceStyle == .dark ? .black : .white
-        })
+        Color(
+            UIColor { traits in
+                traits.userInterfaceStyle == .dark ? .black : .white
+            }
+        )
     }
 
     @Test("contrastRatio(with:compatibleWith:) resolves against the given traits, not the ambient ones")
@@ -303,7 +298,6 @@ struct TraitAwareResolutionTests {
 
 @Suite("Trait-aware resolution (AppKit)")
 struct TraitAwareResolutionTests {
-
     /// A dynamic color that is white under a light appearance and black under a dark
     /// appearance — deliberately extreme so resolution differences are unambiguous.
     private var dynamicBlackOrWhite: Color {
@@ -365,7 +359,6 @@ struct TraitAwareResolutionTests {
 
 @Suite("Debug-only safety checks")
 struct DebugSafetyTests {
-
     @Test("relativeLuminance asserts on a non-opaque color with no background to composite over")
     func luminanceAssertsOnUnflattenedAlpha() async {
         await #expect(processExitsWith: .failure) {

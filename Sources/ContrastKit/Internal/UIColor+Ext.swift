@@ -12,7 +12,6 @@ import AppKit.NSColor
 
 // MARK: - Internal API
 extension AgnosticColor {
-
     /// Resolves this color's components into the sRGB color space, optionally compositing
     /// over a `background` color when this color is not fully opaque.
     ///
@@ -28,7 +27,6 @@ extension AgnosticColor {
     internal func sRGBComponents(
         compositingOver background: AgnosticColor? = nil
     ) -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
-
         let raw: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
 
         #if os(macOS)
@@ -38,8 +36,9 @@ extension AgnosticColor {
         raw = (r, g, b, a)
         #else
         if let sRGBSpace = CGColorSpace(name: CGColorSpace.sRGB),
-           let converted = cgColor.converted(to: sRGBSpace, intent: .defaultIntent, options: nil),
-           let components = converted.components {
+            let converted = cgColor.converted(to: sRGBSpace, intent: .defaultIntent, options: nil),
+            let components = converted.components
+        {
             switch components.count {
                 case 4:
                     raw = (components[0], components[1], components[2], components[3])
@@ -48,7 +47,8 @@ extension AgnosticColor {
                 default:
                     raw = (0, 0, 0, 1)
             }
-        } else {
+        }
+        else {
             raw = (0, 0, 0, 1)
         }
         #endif
@@ -76,9 +76,9 @@ extension AgnosticColor {
 
         assert(
             background != nil || components.alpha >= 0.999,
-            "luminance() was called on a non-opaque color with no background to composite " +
-            "over — the result ignores alpha and is not meaningful. Pass `compositingOver:` " +
-            "or flatten the color first."
+            "luminance() was called on a non-opaque color with no background to composite "
+                + "over — the result ignores alpha and is not meaningful. Pass `compositingOver:` "
+                + "or flatten the color first."
         )
 
         return calculateLuminance(red: components.red, green: components.green, blue: components.blue)
@@ -122,8 +122,8 @@ extension AgnosticColor {
         let kHighRGBLuminanceAddend: CGFloat = 0.055
         let kLuminancePower: CGFloat = 2.4
 
-        return component < 0.03928 ?
-        component / kLowRGBLuminanceMultiplier :
-        pow((component + kHighRGBLuminanceAddend) / kHighRGBLuminanceMultiplier, kLuminancePower)
+        return component < 0.03928
+            ? component / kLowRGBLuminanceMultiplier
+            : pow((component + kHighRGBLuminanceAddend) / kHighRGBLuminanceMultiplier, kLuminancePower)
     }
 }

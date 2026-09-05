@@ -9,7 +9,6 @@ import SwiftUI
 // MARK: - Level Ramp
 
 extension Color {
-
     /// Returns an environment-aware style at the specified lightness level.
     ///
     /// The level is automatically mirrored for dark mode — no `@Environment` capture needed.
@@ -54,7 +53,6 @@ extension Color {
 // MARK: - Contrast Measurement
 
 extension Color {
-
     /// The WCAG 2.1 relative luminance of this colour, in the range `0...1`.
     ///
     /// Converts to sRGB before computing luminance, so the result is correct for Display P3
@@ -117,7 +115,6 @@ extension Color {
 // MARK: - Foreground Selection
 
 extension Color {
-
     /// Picks whichever colour in `candidates` achieves the highest contrast against `self`
     /// while still meeting `level`, treating `level` as a floor to maximise beyond rather than
     /// a band to stay inside.

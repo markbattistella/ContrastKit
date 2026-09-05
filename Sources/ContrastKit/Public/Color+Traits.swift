@@ -12,7 +12,6 @@ import UIKit.UITraitCollection
 // MARK: - Trait-Aware Resolution (UIKit)
 
 extension Color {
-
     /// The WCAG 2.1 relative luminance of this colour when resolved against an explicit
     /// `UITraitCollection`, rather than whatever traits happen to be ambient.
     ///
@@ -113,7 +112,6 @@ import AppKit.NSAppearance
 // MARK: - Trait-Aware Resolution (AppKit)
 
 extension Color {
-
     /// The WCAG 2.1 relative luminance of this colour when resolved against an explicit
     /// `NSAppearance`, rather than whatever appearance is currently active.
     ///

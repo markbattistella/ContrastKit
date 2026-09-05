@@ -12,7 +12,6 @@ import SwiftUI
 
 /// Shows fixed light-mode shades with contrast info.
 internal struct StandardShadeView: View {
-
     private let baseColor = Color.pink
 
     var body: some View {
@@ -39,7 +38,6 @@ internal struct StandardShadeView: View {
 
 /// Shows shades resolved against the current environment's colour scheme, with contrast info.
 internal struct EnvironmentShadeView: View {
-
     @Environment(\.colorScheme)
     private var colorScheme
 
@@ -69,7 +67,6 @@ internal struct EnvironmentShadeView: View {
 
 /// Demonstrates the simplified API — no `@Environment` needed at call sites.
 internal struct AdaptiveShadeView: View {
-
     private let baseColor = Color.pink
 
     var body: some View {

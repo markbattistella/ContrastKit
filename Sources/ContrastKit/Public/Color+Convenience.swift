@@ -9,7 +9,6 @@ import SwiftUI
 // MARK: - Convenience APIs
 
 extension Color {
-
     /// Returns an environment-aware style at level 50 lightness.
     public var level50: ColorLevelStyle { self.level(.level50) }
 

@@ -17,7 +17,6 @@ internal enum AccessibilityRating: String {
 }
 
 extension Color {
-
     /// Returns a string describing the contrast information between this color and another.
     /// Includes the enforced contrast level.
     ///
@@ -38,7 +37,6 @@ extension Color {
 }
 
 extension AccessibilityRating {
-
     /// Determines the accessibility rating based on the contrast ratio.
     ///
     /// - Parameter ratio: The contrast ratio.

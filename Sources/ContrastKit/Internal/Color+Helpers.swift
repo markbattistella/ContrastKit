@@ -9,7 +9,6 @@ import SwiftUI
 // MARK: - Internal APIs
 
 extension Color {
-
     /// Creates a color from specified HSL (Hue, Saturation, Lightness) components.
     ///
     /// The method calculates the corresponding RGB values using the HSL color model and
@@ -67,7 +66,8 @@ extension Color {
         maxRatio: CGFloat? = nil
     ) -> Color? {
         let background = AgnosticColor(self)
-        let candidateColors = [Color.white, Color.black]
+        let candidateColors =
+            [Color.white, Color.black]
             + ColorLevel.allCases.map { self.level($0, for: .light) }
             + ColorLevel.allCases.map { self.level($0, for: .dark) }
 
@@ -89,7 +89,6 @@ extension Color {
 // MARK: - Private APIs
 
 extension Color {
-
     /// Converts hue value to RGB components.
     ///
     /// This function supports the conversion by determining which segment
