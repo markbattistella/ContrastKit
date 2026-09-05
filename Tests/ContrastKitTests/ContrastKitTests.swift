@@ -9,9 +9,9 @@ import Testing
 
 @testable import ContrastKit
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import UIKit.UITraitCollection
-#else
+#elseif canImport(AppKit)
 import AppKit.NSAppearance
 #endif
 
@@ -236,7 +236,7 @@ struct WideGamutTests {
 
 // MARK: - Trait-Aware Resolution
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 
 @Suite("Trait-aware resolution (UIKit)")
 struct TraitAwareResolutionTests {
@@ -294,7 +294,7 @@ struct TraitAwareResolutionTests {
     }
 }
 
-#else
+#elseif canImport(AppKit)
 
 @Suite("Trait-aware resolution (AppKit)")
 struct TraitAwareResolutionTests {

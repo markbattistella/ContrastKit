@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import UIKit.UITraitCollection
 
 // MARK: - Trait-Aware Resolution (UIKit)
@@ -106,7 +106,7 @@ extension Color {
     }
 }
 
-#else
+#elseif canImport(AppKit)
 import AppKit.NSAppearance
 
 // MARK: - Trait-Aware Resolution (AppKit)
