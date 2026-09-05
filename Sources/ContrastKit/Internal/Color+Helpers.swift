@@ -33,65 +33,56 @@ extension Color {
         return Color(red: Double(r), green: Double(g), blue: Double(b))
     }
 
-    /// Retrieves and returns the HSL components of the color.
+    /// Retrieves and returns the true HSL components of the color.
     ///
-    /// This method uses the UIKit method to extract hue, saturation, and brightness
-    /// values, then returns them as a tuple. Note that `brightness` in UIKit corresponds
-    /// to `lightness` in HSL.
+    /// Converts the color to sRGB and derives hue, saturation, and lightness directly from
+    /// those components — this is a genuine RGB→HSL conversion, not UIKit's HSB (`getHue`),
+    /// which uses a different lightness axis than HSL (pure red is HSB `(0°, 1.0, 1.0)` but
+    /// HSL `(0°, 1.0, 0.5)`).
     ///
-    /// - Returns: A tuple containing the hue, saturation, and lightness (brightness in UIKit)
+    /// - Returns: A tuple containing the hue (degrees, `0..<360`), saturation, and lightness
     /// of the color.
     internal func uiColorComponents() -> (hue: CGFloat, saturation: CGFloat, lightness: CGFloat) {
-        var hue: CGFloat = 0
-        var saturation: CGFloat = 0
-        var brightness: CGFloat = 0
-
-        #if os(macOS)
-        let color = AgnosticColor(self).usingColorSpace(.sRGB) ?? AgnosticColor.white
-        #else
-        let color = AgnosticColor(self)
-        #endif
-
-        color.getHue(&hue,
-                     saturation: &saturation,
-                     brightness: &brightness,
-                     alpha: nil)
-        return (hue, saturation, brightness)
+        let components = AgnosticColor(self).sRGBComponents()
+        return Self.rgbToHSL(red: components.red, green: components.green, blue: components.blue)
     }
 
     /// Calculates the color that provides the best contrast according to the specified
-    /// contrast level settings.
+    /// contrast level, treating the level's minimum ratio as a floor to maximise against
+    /// rather than a band to stay within.
     ///
-    /// This method calculates the best contrast by evaluating all potential candidate colors
-    /// and selecting the one that offers the highest contrast without exceeding the specified
-    /// maximum ratio.
+    /// Candidates are drawn from pure white, pure black, and the full light *and* dark
+    /// lightness ramp of `self` — searching only the light ramp would miss the correct
+    /// candidates when picking a contrast color against a dark-scheme value.
     ///
     /// - Parameters:
     ///   - level: The contrast level to calculate.
     ///   - maxRatio: The optional maximum contrast ratio to consider. If nil, there's no
     ///   upper limit.
-    /// - Returns: The `Color` that provides the best contrast.
+    /// - Returns: The `Color` that achieves the highest contrast while meeting `level`, or
+    /// `nil` if no candidate does — silently returning white when nothing qualifies would be a
+    /// confidently wrong answer to an accessibility question.
     internal func calculateBestContrast(
         for level: ContrastLevel,
         maxRatio: CGFloat? = nil
-    ) -> Color {
-        let backgroundLuminance = AgnosticColor(self).luminance()
-        var bestContrastColor: Color = .white
-        var bestContrastRatio: CGFloat = 0
-        let candidateColors = [Color.white, Color.black] + ColorLevel.allCases.map { self.level($0, for: .light) }
-        let (minRatio, upperLimit) = (level.ratio.min, maxRatio ?? level.ratio.max)
+    ) -> Color? {
+        let background = AgnosticColor(self)
+        let candidateColors = [Color.white, Color.black]
+            + ColorLevel.allCases.map { self.level($0, for: .light) }
+            + ColorLevel.allCases.map { self.level($0, for: .dark) }
+
+        let minRatio = CGFloat(level.minimumRatio)
+        let upperLimit = maxRatio ?? .infinity
+
+        var best: (color: Color, ratio: CGFloat)?
         for candidate in candidateColors {
-            let candidateLuminance = AgnosticColor(candidate).luminance()
-            let contrastRatio = (max(backgroundLuminance, candidateLuminance) + 0.05) /
-            (min(backgroundLuminance, candidateLuminance) + 0.05)
-            if contrastRatio >= minRatio
-                && contrastRatio <= upperLimit
-                && contrastRatio > bestContrastRatio {
-                bestContrastRatio = contrastRatio
-                bestContrastColor = candidate
+            let ratio = background.contrastRatio(with: AgnosticColor(candidate))
+            guard ratio >= minRatio, ratio <= upperLimit else { continue }
+            if best == nil || ratio > best!.ratio {
+                best = (candidate, ratio)
             }
         }
-        return bestContrastColor
+        return best?.color
     }
 }
 
@@ -125,5 +116,41 @@ extension Color {
             case 5: (c + m, m, x + m)
             default: (m, m, m)
         }
+    }
+
+    /// Converts sRGB components to HSL.
+    ///
+    /// - Parameters:
+    ///   - red: The red component, `0...1`.
+    ///   - green: The green component, `0...1`.
+    ///   - blue: The blue component, `0...1`.
+    /// - Returns: The hue (degrees, `0..<360`), saturation, and lightness.
+    private static func rgbToHSL(
+        red: CGFloat,
+        green: CGFloat,
+        blue: CGFloat
+    ) -> (hue: CGFloat, saturation: CGFloat, lightness: CGFloat) {
+        let maxComponent = max(red, green, blue)
+        let minComponent = min(red, green, blue)
+        let lightness = (maxComponent + minComponent) / 2
+        let delta = maxComponent - minComponent
+
+        guard delta > .ulpOfOne else { return (0, 0, lightness) }
+
+        let saturation = delta / (1 - abs(2 * lightness - 1))
+
+        var hue: CGFloat
+        switch maxComponent {
+            case red:
+                hue = ((green - blue) / delta).truncatingRemainder(dividingBy: 6)
+            case green:
+                hue = (blue - red) / delta + 2
+            default:
+                hue = (red - green) / delta + 4
+        }
+        hue *= 60
+        if hue < 0 { hue += 360 }
+
+        return (hue, saturation, lightness)
     }
 }

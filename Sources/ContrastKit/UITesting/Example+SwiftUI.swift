@@ -20,7 +20,7 @@ internal struct StandardShadeView: View {
             VStack(spacing: 0) {
                 ForEach(ColorLevel.allCases, id: \.self) { level in
                     let shadeColor = baseColor.level(level, for: .light)
-                    let contrastColor = shadeColor.highestRatedContrastLevel
+                    let contrastColor = shadeColor.highestRatedContrastLevel ?? .gray
                     let contrastInfo = shadeColor.contrastInfo(with: contrastColor)
                     ShadeCell(level, shade: shadeColor, contrast: contrastColor, info: contrastInfo)
                 }
@@ -28,7 +28,7 @@ internal struct StandardShadeView: View {
             VStack(spacing: 0) {
                 ForEach(ColorLevel.allCases, id: \.self) { level in
                     let shadeColor = baseColor.level(level, for: .light)
-                    let contrastColor = shadeColor.aaLargeContrastLevel
+                    let contrastColor = shadeColor.aaLargeContrastLevel ?? .gray
                     let contrastInfo = shadeColor.contrastInfo(with: contrastColor, for: .aaLarge)
                     ShadeCell(level, shade: shadeColor, contrast: contrastColor, info: contrastInfo)
                 }
@@ -50,7 +50,7 @@ internal struct EnvironmentShadeView: View {
             VStack(spacing: 0) {
                 ForEach(ColorLevel.allCases, id: \.self) { level in
                     let shadeColor = baseColor.level(level, for: colorScheme)
-                    let contrastColor = shadeColor.highestRatedContrastLevel
+                    let contrastColor = shadeColor.highestRatedContrastLevel ?? .gray
                     let contrastInfo = shadeColor.contrastInfo(with: contrastColor)
                     ShadeCell(level, shade: shadeColor, contrast: contrastColor, info: contrastInfo)
                 }
@@ -58,7 +58,7 @@ internal struct EnvironmentShadeView: View {
             VStack(spacing: 0) {
                 ForEach(ColorLevel.allCases, id: \.self) { level in
                     let shadeColor = baseColor.level(level, for: colorScheme)
-                    let contrastColor = shadeColor.aaLargeContrastLevel
+                    let contrastColor = shadeColor.aaLargeContrastLevel ?? .gray
                     let contrastInfo = shadeColor.contrastInfo(with: contrastColor, for: .aaLarge)
                     ShadeCell(level, shade: shadeColor, contrast: contrastColor, info: contrastInfo)
                 }

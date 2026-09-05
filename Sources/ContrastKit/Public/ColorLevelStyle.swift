@@ -18,7 +18,7 @@ import SwiftUI
 /// Text("Hello").foregroundStyle(brandColor.level(.level300))
 /// Text("World").foregroundStyle(brandColor.level700)
 /// ```
-public struct ColorLevelStyle: ShapeStyle {
+public struct ColorLevelStyle: ShapeStyle, Sendable {
     private let base: Color
     private let level: ColorLevel
 

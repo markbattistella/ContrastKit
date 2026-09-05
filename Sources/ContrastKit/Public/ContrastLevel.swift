@@ -14,31 +14,25 @@ import Foundation
 /// - AAA: Enhanced contrast for improved readability.
 public enum ContrastLevel: String, Sendable {
 
-  /// Contrast level for large text, typically for visual accessibility.
-  case aaLarge = "AA Large"
+    /// Contrast level for large text, typically for visual accessibility.
+    case aaLarge = "AA Large"
 
-  /// Standard contrast level for normal text size, ensuring clear readability.
-  case aa = "AA"
+    /// Standard contrast level for normal text size, ensuring clear readability.
+    case aa = "AA"
 
-  /// Highest contrast level, recommended for the best readability in all contexts.
-  case aaa = "AAA"
+    /// Highest contrast level, recommended for the best readability in all contexts.
+    case aaa = "AAA"
 
-  /// Provides the minimum and maximum contrast ratios for each contrast level.
-  ///
-  /// These values define the acceptable range of contrast ratios to meet or exceed specific
-  /// accessibility requirements:
-  /// - For `aaLarge`, the range is suitable for large text.
-  /// - For `aa`, the range is set for normal text.
-  /// - For `aaa`, the range encompasses the highest contrast ratio, suitable for all types
-  /// of text to ensure optimal readability.
-  var ratio: (min: CGFloat, max: CGFloat) {
-    switch self {
-    case .aaLarge:
-      return (3.0, 4.49)
-    case .aa:
-      return (4.5, 6.99)
-    case .aaa:
-      return (7.0, CGFloat.infinity)
+    /// The minimum WCAG 2.1 contrast ratio required to meet this level.
+    ///
+    /// WCAG levels are floors, not bands: a ratio of `8.0` still meets `.aa` — it simply also
+    /// meets the stricter `.aaa`. Use this value to check `ratio >= level.minimumRatio`, never
+    /// to reject a ratio for being "too readable".
+    public var minimumRatio: Double {
+        switch self {
+            case .aaLarge: 3.0
+            case .aa: 4.5
+            case .aaa: 7.0
+        }
     }
-  }
 }

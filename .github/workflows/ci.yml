@@ -11,9 +11,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  swift:
-    name: macOS
-    runs-on: macos-15
+  macos:
+    name: macOS (build + test)
+    runs-on: macos-26
 
     steps:
       - uses: actions/checkout@v4
@@ -22,12 +22,52 @@ jobs:
         run: swift build
 
       - name: Test
-        run: |
-          if [ -d "Tests" ]; then swift test; fi
+        run: swift test
 
-  simulator:
-    name: iOS Simulator
-    runs-on: macos-15
+  ios-simulator:
+    name: iOS Simulator (build + test)
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -scheme ${{ github.event.repository.name }} \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            CODE_SIGNING_ALLOWED=NO
+
+  simulator-build-only:
+    name: ${{ matrix.name }} (build)
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: tvOS Simulator
+            sdk: appletvsimulator
+            triple: arm64-apple-tvos17.0-simulator
+          - name: watchOS Simulator
+            sdk: watchsimulator
+            triple: arm64-apple-watchos10.0-simulator
+          - name: visionOS Simulator
+            sdk: xrsimulator
+            triple: arm64-apple-xros1.0-simulator
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          SDKROOT=$(xcrun --sdk "${{ matrix.sdk }}" --show-sdk-path)
+          swift build \
+            --sdk "$SDKROOT" \
+            --triple "${{ matrix.triple }}"
+
+  catalyst:
+    name: Mac Catalyst (build)
+    runs-on: macos-26
 
     steps:
       - uses: actions/checkout@v4
@@ -36,5 +76,5 @@ jobs:
         run: |
           xcodebuild build \
             -scheme ${{ github.event.repository.name }} \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'platform=macOS,variant=Mac Catalyst' \
             CODE_SIGNING_ALLOWED=NO

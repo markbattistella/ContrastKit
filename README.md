@@ -43,7 +43,93 @@ This package is particularly useful for UI/UX designers and developers focusing 
 ## Migration Guide
 
 > [!IMPORTANT]
-> **Version 26.2.20 contains breaking changes.** Please read this section before upgrading.
+> **This release contains breaking changes.** Please read this section before upgrading.
+
+### Correctness fixes that change existing output
+
+These are not API changes, but they change the *values* several existing APIs return —
+treat them the same as a breaking change when upgrading:
+
+- **The lightness ramp (`level(_:for:)`, `level(_:)`, `level50`…`level950`) now uses a real
+  RGB→HSL conversion.** The previous implementation read HSB saturation (via `UIColor`/`NSColor`
+  `getHue(_:saturation:brightness:)`) and fed it into an HSL reconstruction formula, which are
+  different colour models. Any saturated colour's generated shades will look slightly different —
+  more correct, but different — after upgrading. Achromatic (grey) colours are unaffected.
+- **Luminance and contrast calculations now convert to sRGB first.** Display P3 (and other
+  wide-gamut) asset catalog colours previously had their raw components read directly and pushed
+  through the sRGB-only WCAG formula, producing a confidently wrong number that grew with
+  saturation. If your asset catalog colours are in Display P3 — the Xcode default — every ratio
+  and derived colour involving them will change to the correct value.
+- **Contrast levels (`ContrastLevel`) are now floors, not bands.** `AA` no longer rejects a
+  candidate for having *too high* a contrast ratio (previously capped at `6.99`), and neither
+  does `AA Large` (previously capped at `4.49`). A colour that meets `AAA` also meets `AA` and
+  `AA Large`, per the WCAG spec. This changes which candidate `aaContrastLevel` and
+  `aaLargeContrastLevel` select.
+
+### Contrast picking APIs now return an optional
+
+- **`highestRatedContrastLevel`, `aaaContrastLevel`, `aaContrastLevel`, and
+  `aaLargeContrastLevel` now return `Color?` instead of `Color`.** Previously, if no candidate
+  met the requested level, these silently returned `.white` without ever checking whether white
+  itself qualified. They now return `nil` when nothing in the candidate set meets the level.
+
+  ```swift
+  // Before
+  let contrastColor: Color = shadeColor.highestRatedContrastLevel
+
+  // After
+  guard let contrastColor = shadeColor.highestRatedContrastLevel else {
+      // Nothing met AAA against this background — pick a fallback deliberately.
+      return
+  }
+  ```
+
+- **`ContrastLevel.ratio` (the internal `(min, max)` band) is replaced by
+  `ContrastLevel.minimumRatio: Double`.** There is no replacement for the upper bound — see
+  "Contrast levels are now floors" above.
+
+### New API: measuring contrast, not just picking colours
+
+ContrastKit previously had no way to answer "what is the contrast ratio between these two
+colours" — every API picked a colour for you. These are new, additive APIs:
+
+```swift
+// The actual ratio — what an accessibility test asserts against.
+let ratio = accent.contrastRatio(with: onAccent)          // 1...21
+#expect(ratio >= ContrastLevel.aaa.minimumRatio)
+
+// A direct pass/fail check.
+#expect(accent.meets(.aaa, against: onAccent))
+
+// Relative luminance on its own.
+let luminance = accent.relativeLuminance                  // 0...1
+
+// Composite a translucent colour over a backdrop before measuring contrast —
+// WCAG contrast is only defined for opaque colours.
+let flattened = scrim.flattened(over: background)
+
+// Derive a readable foreground from a small candidate set, instead of hand-tuning it.
+let onAccent = accent.mostReadableForeground(from: [.white, .black], meeting: .aaa)
+```
+
+#### Resolving against a specific appearance
+
+Dynamic colours (asset catalog colours, `UIColor { traits in ... }`, etc.) only have one
+concrete value once resolved against a specific trait collection or appearance — resolving
+against whatever is ambient is unpredictable in tests and wrong outside the screen the call
+happens to run on. Every contrast API above has a trait-aware overload:
+
+```swift
+// UIKit — also covers Increase Contrast, which is its own trait, not just light/dark.
+let highContrastDark = UITraitCollection(traitsFrom: [
+    UITraitCollection(userInterfaceStyle: .dark),
+    UITraitCollection(accessibilityContrast: .high)
+])
+let ratio = accent.contrastRatio(with: onAccent, compatibleWith: highContrastDark)
+
+// AppKit
+let ratio = accent.contrastRatio(with: onAccent, compatibleWith: NSAppearance(named: .darkAqua)!)
+```
 
 ### Minimum deployment targets raised
 
@@ -129,7 +215,10 @@ import ContrastKit
 // Resolved Color — use when you need a concrete value
 let baseColor = Color.purple
 let shadeColor = baseColor.level(.level100, for: .light)
-let contrastColor = shadeColor.highestRatedContrastLevel
+
+// `highestRatedContrastLevel` returns `Color?` — `nil` means nothing in the candidate
+// set met AAA against this background, so pick a fallback deliberately.
+let contrastColor = shadeColor.highestRatedContrastLevel ?? .black
 
 // In SwiftUI, use level(_:) directly — adapts to the environment automatically
 Rectangle()
@@ -160,7 +249,7 @@ struct ContentView: View {
             // Highest contrast foreground over a fixed background
             let bg = baseColor.level(.level200, for: .light)
             Text("Accessible text")
-                .foregroundStyle(Color(bg.highestRatedContrastLevel))
+                .foregroundStyle(bg.highestRatedContrastLevel ?? .black)
                 .background(bg)
         }
     }
@@ -181,7 +270,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         let baseUIColor = UIColor.systemBlue
         let contrastKitColor = Color(baseUIColor)
-        let highContrastUIColor = UIColor(contrastKitColor.highestRatedContrastLevel)
+        let highContrastUIColor = UIColor(contrastKitColor.highestRatedContrastLevel ?? .black)
 
         let label = UILabel()
         label.text = "High Contrast Label"
@@ -207,7 +296,7 @@ class ViewController: NSViewController {
         self.view = NSView()
         let baseNSColor = NSColor.systemRed
         let contrastKitColor = Color(baseNSColor)
-        let highContrastNSColor = NSColor(contrastKitColor.highestRatedContrastLevel)
+        let highContrastNSColor = NSColor(contrastKitColor.highestRatedContrastLevel ?? .black)
 
         let textField = NSTextField(labelWithString: "High Contrast Text")
         textField.textColor = highContrastNSColor
@@ -249,13 +338,13 @@ The `ColorLevel` enum defines different levels of lightness for colours, which c
 
 ### Contrast
 
-The `ContrastLevel` enum specifies minimum and maximum contrast ratios for three accessibility standards: AA Large, AA, and AAA. These levels are based on the WCAG guidelines to ensure that text and interactive elements are readable and accessible.
+The `ContrastLevel` enum specifies the minimum contrast ratio for three accessibility standards: AA Large, AA, and AAA, based on the WCAG 2.1 guidelines. These are floors, not bands — a ratio that meets AAA also meets AA and AA Large; there is no upper bound on "too much contrast".
 
-| Level | Minimum Ratio | Maximum Ratio | Description |
-| - | - | - | - |
-| AA Large | `3.0` | `4.49` | Suitable for large text, offering basic readability. |
-| AA | `4.5` | `6.99` | Standard level for normal text size, providing clear readability. |
-| AAA | `7.0` | `.infinity` | Highest contrast level, recommended for the best readability across all contexts. |
+| Level | Minimum Ratio (`minimumRatio`) | Description |
+| - | - | - |
+| AA Large | `3.0` | Suitable for large text, offering basic readability. |
+| AA | `4.5` | Standard level for normal text size, providing clear readability. |
+| AAA | `7.0` | Highest contrast level, recommended for the best readability across all contexts. |
 
 ### Adaptive Colour Scheme
 

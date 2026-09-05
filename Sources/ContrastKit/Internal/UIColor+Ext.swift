@@ -13,31 +13,84 @@ import AppKit.NSColor
 // MARK: - Internal API
 extension AgnosticColor {
 
-    /// Computes the perceived luminance of the color using the sRGB formula.
-    /// This method handles different color spaces including RGB and grayscale.
+    /// Resolves this color's components into the sRGB color space, optionally compositing
+    /// over a `background` color when this color is not fully opaque.
     ///
-    /// - Returns: A CGFloat representing the luminance of the color.
-    internal func luminance() -> CGFloat {
-        guard let components = cgColor.components else { return 0 }
-        let numberOfComponents = components.count
-        let r: CGFloat, g: CGFloat, b: CGFloat
+    /// Asset catalog colors default to Display P3 on modern platforms. Reading `cgColor`
+    /// components directly — without this conversion — silently mixes P3-encoded values into
+    /// formulas (like WCAG luminance) that are only valid in sRGB, producing confidently wrong
+    /// numbers that grow with saturation.
+    ///
+    /// - Parameter background: The color to composite over when `self` has alpha < 1. Ignored
+    ///   when `self` is already fully opaque.
+    /// - Returns: The red, green, blue, and alpha components in sRGB space. Alpha is `1` if a
+    ///   `background` was composited in.
+    internal func sRGBComponents(
+        compositingOver background: AgnosticColor? = nil
+    ) -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
 
-        switch numberOfComponents {
-            case 4: // RGBA
-                r = components[0]
-                g = components[1]
-                b = components[2]
-            case 2, 1: // Grayscale
-                r = components[0]
-                g = components[0]
-                b = components[0]
-            default: // Unexpected color space
-                r = 0
-                g = 0
-                b = 0
+        let raw: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
+
+        #if os(macOS)
+        let sRGBColor = usingColorSpace(.sRGB) ?? AgnosticColor.black
+        var (r, g, b, a): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
+        sRGBColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        raw = (r, g, b, a)
+        #else
+        if let sRGBSpace = CGColorSpace(name: CGColorSpace.sRGB),
+           let converted = cgColor.converted(to: sRGBSpace, intent: .defaultIntent, options: nil),
+           let components = converted.components {
+            switch components.count {
+                case 4:
+                    raw = (components[0], components[1], components[2], components[3])
+                case 2:
+                    raw = (components[0], components[0], components[0], components[1])
+                default:
+                    raw = (0, 0, 0, 1)
+            }
+        } else {
+            raw = (0, 0, 0, 1)
         }
+        #endif
 
-        return calculateLuminance(red: r, green: g, blue: b)
+        guard let background, raw.alpha < 1 else { return raw }
+
+        let backdrop = background.sRGBComponents()
+        let alpha = raw.alpha
+        return (
+            red: raw.red * alpha + backdrop.red * (1 - alpha),
+            green: raw.green * alpha + backdrop.green * (1 - alpha),
+            blue: raw.blue * alpha + backdrop.blue * (1 - alpha),
+            alpha: 1
+        )
+    }
+
+    /// Computes the WCAG 2.1 relative luminance of the color, converting to sRGB first.
+    ///
+    /// - Parameter background: A color to composite over first when `self` is not fully
+    ///   opaque. Required for a meaningful result on translucent colors — omitting it on a
+    ///   translucent color silently ignores alpha (flagged via `assert` in debug builds).
+    /// - Returns: A value in `0...1` representing the color's relative luminance.
+    internal func luminance(compositingOver background: AgnosticColor? = nil) -> CGFloat {
+        let components = sRGBComponents(compositingOver: background)
+
+        assert(
+            background != nil || components.alpha >= 0.999,
+            "luminance() was called on a non-opaque color with no background to composite " +
+            "over — the result ignores alpha and is not meaningful. Pass `compositingOver:` " +
+            "or flatten the color first."
+        )
+
+        return calculateLuminance(red: components.red, green: components.green, blue: components.blue)
+    }
+
+    /// Computes the WCAG 2.1 contrast ratio between this color and `other`, in the range
+    /// `1...21`. This is the single canonical implementation of the ratio formula — every
+    /// other contrast calculation in the package routes through this method.
+    internal func contrastRatio(with other: AgnosticColor) -> CGFloat {
+        let luminance1 = luminance()
+        let luminance2 = other.luminance()
+        return (max(luminance1, luminance2) + 0.05) / (min(luminance1, luminance2) + 0.05)
     }
 
     /// Helper function to calculate luminance using the standard sRGB luminance formula.
